@@ -1,14 +1,18 @@
+type Query{
+  hello: String!
+}
+
 type User {
-  id: ID! @id
-  email: String! @unique
+  id: ID!
+  email: String!
   password: String!
-  username: String! @unique
+  username: String!
   age: Int
   jokes:[Joke!]!
 }
 
 type Joke {
-  id: ID! @id
+  id: ID!
   author: User!
   title: String!
   text: String!
@@ -17,7 +21,7 @@ type Joke {
 }
 
 type Comment {
-  id: ID! @id
+  id: ID!
   text: String
   author: User!
   joke: Joke!

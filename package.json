@@ -1,0 +1,32 @@
+{
+  "name": "jokes-graphql-postgresql",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon --exec babel-node src/app.js -e js,graphql",
+    "get-schema": "graphql get-schema -p prisma"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ZenerZeppelin/-jokes-graphql-postgresql-.git"
+  },
+  "author": "Lola",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ZenerZeppelin/-jokes-graphql-postgresql-/issues"
+  },
+  "homepage": "https://github.com/ZenerZeppelin/-jokes-graphql-postgresql-#readme",
+  "devDependencies": {
+    "@babel/core": "^7.9.0",
+    "@babel/node": "^7.8.7",
+    "@babel/preset-env": "^7.9.5",
+    "nodemon": "^2.0.3"
+  },
+  "dependencies": {
+    "graphql-cli": "^3.0.14",
+    "graphql-yoga": "^1.18.3",
+    "prisma-binding": "^2.3.16"
+  }
+}

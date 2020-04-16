@@ -1,0 +1,26 @@
+type User {
+  id: ID! @id
+  email: String! @unique
+  password: String!
+  username: String! @unique
+  age: Int
+  jokes:[Joke!]! @relation(name:"UserToJoke" onDelete: CASCADE)
+  comments: [Comment]! @relation(name:"UserToComment" onDelete: CASCADE)
+}
+
+type Joke {
+  id: ID! @id 
+  author: User! @relation(name:"UserToJoke" onDelete: SET_NULL)
+  title: String!
+  text: String!
+  numberOfRatings: Int!
+  avgRating: Float!
+  comments: [Comment!]! @relation(name:"JokeToComment" onDelete: CASCADE)
+}
+
+type Comment {
+  id:ID! @id
+  text: String!
+  author: User! @relation(name:"UserToComment" onDelete: SET_NULL)
+  joke: Joke! @relation(name:"JokeToComment" onDelete: SET_NULL) 
+}
