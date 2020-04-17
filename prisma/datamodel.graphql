@@ -3,9 +3,11 @@ type User {
   email: String! @unique
   password: String!
   username: String! @unique
+  role: UserRole
   age: Int
   jokes:[Joke!]! @relation(name:"UserToJoke" onDelete: CASCADE)
   comments: [Comment]! @relation(name:"UserToComment" onDelete: CASCADE)
+  reviews:[Review!]! @relation(name:"UserToReview" onDelete: CASCADE)
 }
 
 type Joke {
@@ -14,8 +16,10 @@ type Joke {
   title: String!
   text: String!
   numberOfRatings: Int!
+  sumOfRatings: Int!
   avgRating: Float!
   comments: [Comment!]! @relation(name:"JokeToComment" onDelete: CASCADE)
+  reviews: [Review!]! @relation(name:"JokeToReview" onDelete: CASCADE)
 }
 
 type Comment {
@@ -23,4 +27,17 @@ type Comment {
   text: String!
   author: User! @relation(name:"UserToComment" onDelete: SET_NULL)
   joke: Joke! @relation(name:"JokeToComment" onDelete: SET_NULL) 
+}
+
+type Review {
+  id: ID! @id
+  author: User! @relation(name:"UserToReview" onDelete:SET_NULL)
+  joke: Joke! @relation(name:"JokeToReview" onDelete: SET_NULL)
+  rate: Int!
+  text: String!
+}
+
+enum UserRole {
+  JOKER
+  REVIEWER
 }

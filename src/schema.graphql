@@ -1,5 +1,8 @@
 type Query{
-  hello: String!
+  users:[User!]!
+  jokes(query:String, minRate: Float): [Joke!]!
+  comments(jokeId:ID, authorId:ID): [Comment!]!
+  reviews(jokeId:ID, authorId:ID):[Review!]!
 }
 
 type User {
@@ -7,8 +10,11 @@ type User {
   email: String!
   password: String!
   username: String!
+  role: UserRole
   age: Int
   jokes:[Joke!]!
+  comments: [Comment!]!
+  reviews: [Review!]!
 }
 
 type Joke {
@@ -17,7 +23,10 @@ type Joke {
   title: String!
   text: String!
   numberOfRatings: Int!
+  sumOfRatings: Int!
   avgRating: Float!
+  comments: [Comment!]!
+  reviews: [Review!]!
 }
 
 type Comment {
@@ -25,4 +34,17 @@ type Comment {
   text: String
   author: User!
   joke: Joke!
+}
+
+type Review {
+  id: ID!
+  author: User!
+  joke: Joke!
+  rate: Int!
+  text: String!
+}
+
+enum UserRole {
+  JOKER
+  REVIEWER
 }

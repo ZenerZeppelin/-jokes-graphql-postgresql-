@@ -1,11 +1,15 @@
 # source: http://localhost:4466
-# timestamp: Thu Apr 16 2020 20:47:17 GMT+0200 (Central European Summer Time)
+# timestamp: Fri Apr 17 2020 13:39:45 GMT+0200 (Central European Summer Time)
 
 type AggregateComment {
   count: Int!
 }
 
 type AggregateJoke {
+  count: Int!
+}
+
+type AggregateReview {
   count: Int!
 }
 
@@ -391,8 +395,10 @@ type Joke implements Node {
   title: String!
   text: String!
   numberOfRatings: Int!
+  sumOfRatings: Int!
   avgRating: Float!
   comments(where: CommentWhereInput, orderBy: CommentOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Comment!]
+  reviews(where: ReviewWhereInput, orderBy: ReviewOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Review!]
 }
 
 """A connection to a list of items."""
@@ -410,9 +416,11 @@ input JokeCreateInput {
   title: String!
   text: String!
   numberOfRatings: Int!
+  sumOfRatings: Int!
   avgRating: Float!
   author: UserCreateOneWithoutJokesInput!
   comments: CommentCreateManyWithoutJokeInput
+  reviews: ReviewCreateManyWithoutJokeInput
 }
 
 input JokeCreateManyWithoutAuthorInput {
@@ -425,13 +433,20 @@ input JokeCreateOneWithoutCommentsInput {
   connect: JokeWhereUniqueInput
 }
 
+input JokeCreateOneWithoutReviewsInput {
+  create: JokeCreateWithoutReviewsInput
+  connect: JokeWhereUniqueInput
+}
+
 input JokeCreateWithoutAuthorInput {
   id: ID
   title: String!
   text: String!
   numberOfRatings: Int!
+  sumOfRatings: Int!
   avgRating: Float!
   comments: CommentCreateManyWithoutJokeInput
+  reviews: ReviewCreateManyWithoutJokeInput
 }
 
 input JokeCreateWithoutCommentsInput {
@@ -439,8 +454,21 @@ input JokeCreateWithoutCommentsInput {
   title: String!
   text: String!
   numberOfRatings: Int!
+  sumOfRatings: Int!
   avgRating: Float!
   author: UserCreateOneWithoutJokesInput!
+  reviews: ReviewCreateManyWithoutJokeInput
+}
+
+input JokeCreateWithoutReviewsInput {
+  id: ID
+  title: String!
+  text: String!
+  numberOfRatings: Int!
+  sumOfRatings: Int!
+  avgRating: Float!
+  author: UserCreateOneWithoutJokesInput!
+  comments: CommentCreateManyWithoutJokeInput
 }
 
 """An edge in a connection."""
@@ -461,6 +489,8 @@ enum JokeOrderByInput {
   text_DESC
   numberOfRatings_ASC
   numberOfRatings_DESC
+  sumOfRatings_ASC
+  sumOfRatings_DESC
   avgRating_ASC
   avgRating_DESC
 }
@@ -470,6 +500,7 @@ type JokePreviousValues {
   title: String!
   text: String!
   numberOfRatings: Int!
+  sumOfRatings: Int!
   avgRating: Float!
 }
 
@@ -624,6 +655,28 @@ input JokeScalarWhereInput {
 
   """All values greater than or equal the given value."""
   numberOfRatings_gte: Int
+  sumOfRatings: Int
+
+  """All values that are not equal to given value."""
+  sumOfRatings_not: Int
+
+  """All values that are contained in given list."""
+  sumOfRatings_in: [Int!]
+
+  """All values that are not contained in given list."""
+  sumOfRatings_not_in: [Int!]
+
+  """All values less than the given value."""
+  sumOfRatings_lt: Int
+
+  """All values less than or equal the given value."""
+  sumOfRatings_lte: Int
+
+  """All values greater than the given value."""
+  sumOfRatings_gt: Int
+
+  """All values greater than or equal the given value."""
+  sumOfRatings_gte: Int
   avgRating: Float
 
   """All values that are not equal to given value."""
@@ -689,15 +742,18 @@ input JokeUpdateInput {
   title: String
   text: String
   numberOfRatings: Int
+  sumOfRatings: Int
   avgRating: Float
   author: UserUpdateOneRequiredWithoutJokesInput
   comments: CommentUpdateManyWithoutJokeInput
+  reviews: ReviewUpdateManyWithoutJokeInput
 }
 
 input JokeUpdateManyDataInput {
   title: String
   text: String
   numberOfRatings: Int
+  sumOfRatings: Int
   avgRating: Float
 }
 
@@ -705,6 +761,7 @@ input JokeUpdateManyMutationInput {
   title: String
   text: String
   numberOfRatings: Int
+  sumOfRatings: Int
   avgRating: Float
 }
 
@@ -732,20 +789,41 @@ input JokeUpdateOneRequiredWithoutCommentsInput {
   upsert: JokeUpsertWithoutCommentsInput
 }
 
+input JokeUpdateOneRequiredWithoutReviewsInput {
+  create: JokeCreateWithoutReviewsInput
+  connect: JokeWhereUniqueInput
+  update: JokeUpdateWithoutReviewsDataInput
+  upsert: JokeUpsertWithoutReviewsInput
+}
+
 input JokeUpdateWithoutAuthorDataInput {
   title: String
   text: String
   numberOfRatings: Int
+  sumOfRatings: Int
   avgRating: Float
   comments: CommentUpdateManyWithoutJokeInput
+  reviews: ReviewUpdateManyWithoutJokeInput
 }
 
 input JokeUpdateWithoutCommentsDataInput {
   title: String
   text: String
   numberOfRatings: Int
+  sumOfRatings: Int
   avgRating: Float
   author: UserUpdateOneRequiredWithoutJokesInput
+  reviews: ReviewUpdateManyWithoutJokeInput
+}
+
+input JokeUpdateWithoutReviewsDataInput {
+  title: String
+  text: String
+  numberOfRatings: Int
+  sumOfRatings: Int
+  avgRating: Float
+  author: UserUpdateOneRequiredWithoutJokesInput
+  comments: CommentUpdateManyWithoutJokeInput
 }
 
 input JokeUpdateWithWhereUniqueWithoutAuthorInput {
@@ -756,6 +834,11 @@ input JokeUpdateWithWhereUniqueWithoutAuthorInput {
 input JokeUpsertWithoutCommentsInput {
   update: JokeUpdateWithoutCommentsDataInput!
   create: JokeCreateWithoutCommentsInput!
+}
+
+input JokeUpsertWithoutReviewsInput {
+  update: JokeUpdateWithoutReviewsDataInput!
+  create: JokeCreateWithoutReviewsInput!
 }
 
 input JokeUpsertWithWhereUniqueWithoutAuthorInput {
@@ -915,6 +998,28 @@ input JokeWhereInput {
 
   """All values greater than or equal the given value."""
   numberOfRatings_gte: Int
+  sumOfRatings: Int
+
+  """All values that are not equal to given value."""
+  sumOfRatings_not: Int
+
+  """All values that are contained in given list."""
+  sumOfRatings_in: [Int!]
+
+  """All values that are not contained in given list."""
+  sumOfRatings_not_in: [Int!]
+
+  """All values less than the given value."""
+  sumOfRatings_lt: Int
+
+  """All values less than or equal the given value."""
+  sumOfRatings_lte: Int
+
+  """All values greater than the given value."""
+  sumOfRatings_gt: Int
+
+  """All values greater than or equal the given value."""
+  sumOfRatings_gte: Int
   avgRating: Float
 
   """All values that are not equal to given value."""
@@ -941,6 +1046,9 @@ input JokeWhereInput {
   comments_every: CommentWhereInput
   comments_some: CommentWhereInput
   comments_none: CommentWhereInput
+  reviews_every: ReviewWhereInput
+  reviews_some: ReviewWhereInput
+  reviews_none: ReviewWhereInput
 }
 
 input JokeWhereUniqueInput {
@@ -960,21 +1068,27 @@ type Mutation {
   createUser(data: UserCreateInput!): User!
   createJoke(data: JokeCreateInput!): Joke!
   createComment(data: CommentCreateInput!): Comment!
+  createReview(data: ReviewCreateInput!): Review!
   updateUser(data: UserUpdateInput!, where: UserWhereUniqueInput!): User
   updateJoke(data: JokeUpdateInput!, where: JokeWhereUniqueInput!): Joke
   updateComment(data: CommentUpdateInput!, where: CommentWhereUniqueInput!): Comment
+  updateReview(data: ReviewUpdateInput!, where: ReviewWhereUniqueInput!): Review
   deleteUser(where: UserWhereUniqueInput!): User
   deleteJoke(where: JokeWhereUniqueInput!): Joke
   deleteComment(where: CommentWhereUniqueInput!): Comment
+  deleteReview(where: ReviewWhereUniqueInput!): Review
   upsertUser(where: UserWhereUniqueInput!, create: UserCreateInput!, update: UserUpdateInput!): User!
   upsertJoke(where: JokeWhereUniqueInput!, create: JokeCreateInput!, update: JokeUpdateInput!): Joke!
   upsertComment(where: CommentWhereUniqueInput!, create: CommentCreateInput!, update: CommentUpdateInput!): Comment!
+  upsertReview(where: ReviewWhereUniqueInput!, create: ReviewCreateInput!, update: ReviewUpdateInput!): Review!
   updateManyUsers(data: UserUpdateManyMutationInput!, where: UserWhereInput): BatchPayload!
   updateManyJokes(data: JokeUpdateManyMutationInput!, where: JokeWhereInput): BatchPayload!
   updateManyComments(data: CommentUpdateManyMutationInput!, where: CommentWhereInput): BatchPayload!
+  updateManyReviews(data: ReviewUpdateManyMutationInput!, where: ReviewWhereInput): BatchPayload!
   deleteManyUsers(where: UserWhereInput): BatchPayload!
   deleteManyJokes(where: JokeWhereInput): BatchPayload!
   deleteManyComments(where: CommentWhereInput): BatchPayload!
+  deleteManyReviews(where: ReviewWhereInput): BatchPayload!
   executeRaw(database: PrismaDatabase, query: String!): Json!
 }
 
@@ -1013,12 +1127,15 @@ type Query {
   users(where: UserWhereInput, orderBy: UserOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [User]!
   jokes(where: JokeWhereInput, orderBy: JokeOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Joke]!
   comments(where: CommentWhereInput, orderBy: CommentOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Comment]!
+  reviews(where: ReviewWhereInput, orderBy: ReviewOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Review]!
   user(where: UserWhereUniqueInput!): User
   joke(where: JokeWhereUniqueInput!): Joke
   comment(where: CommentWhereUniqueInput!): Comment
+  review(where: ReviewWhereUniqueInput!): Review
   usersConnection(where: UserWhereInput, orderBy: UserOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): UserConnection!
   jokesConnection(where: JokeWhereInput, orderBy: JokeOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): JokeConnection!
   commentsConnection(where: CommentWhereInput, orderBy: CommentOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): CommentConnection!
+  reviewsConnection(where: ReviewWhereInput, orderBy: ReviewOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): ReviewConnection!
 
   """Fetches an object given its ID"""
   node(
@@ -1027,10 +1144,434 @@ type Query {
   ): Node
 }
 
+type Review implements Node {
+  id: ID!
+  author: User!
+  joke: Joke!
+  rate: Int!
+  text: String!
+}
+
+"""A connection to a list of items."""
+type ReviewConnection {
+  """Information to aid in pagination."""
+  pageInfo: PageInfo!
+
+  """A list of edges."""
+  edges: [ReviewEdge]!
+  aggregate: AggregateReview!
+}
+
+input ReviewCreateInput {
+  id: ID
+  rate: Int!
+  text: String!
+  author: UserCreateOneWithoutReviewsInput!
+  joke: JokeCreateOneWithoutReviewsInput!
+}
+
+input ReviewCreateManyWithoutAuthorInput {
+  create: [ReviewCreateWithoutAuthorInput!]
+  connect: [ReviewWhereUniqueInput!]
+}
+
+input ReviewCreateManyWithoutJokeInput {
+  create: [ReviewCreateWithoutJokeInput!]
+  connect: [ReviewWhereUniqueInput!]
+}
+
+input ReviewCreateWithoutAuthorInput {
+  id: ID
+  rate: Int!
+  text: String!
+  joke: JokeCreateOneWithoutReviewsInput!
+}
+
+input ReviewCreateWithoutJokeInput {
+  id: ID
+  rate: Int!
+  text: String!
+  author: UserCreateOneWithoutReviewsInput!
+}
+
+"""An edge in a connection."""
+type ReviewEdge {
+  """The item at the end of the edge."""
+  node: Review!
+
+  """A cursor for use in pagination."""
+  cursor: String!
+}
+
+enum ReviewOrderByInput {
+  id_ASC
+  id_DESC
+  rate_ASC
+  rate_DESC
+  text_ASC
+  text_DESC
+}
+
+type ReviewPreviousValues {
+  id: ID!
+  rate: Int!
+  text: String!
+}
+
+input ReviewScalarWhereInput {
+  """Logical AND on all given filters."""
+  AND: [ReviewScalarWhereInput!]
+
+  """Logical OR on all given filters."""
+  OR: [ReviewScalarWhereInput!]
+
+  """Logical NOT on all given filters combined by AND."""
+  NOT: [ReviewScalarWhereInput!]
+  id: ID
+
+  """All values that are not equal to given value."""
+  id_not: ID
+
+  """All values that are contained in given list."""
+  id_in: [ID!]
+
+  """All values that are not contained in given list."""
+  id_not_in: [ID!]
+
+  """All values less than the given value."""
+  id_lt: ID
+
+  """All values less than or equal the given value."""
+  id_lte: ID
+
+  """All values greater than the given value."""
+  id_gt: ID
+
+  """All values greater than or equal the given value."""
+  id_gte: ID
+
+  """All values containing the given string."""
+  id_contains: ID
+
+  """All values not containing the given string."""
+  id_not_contains: ID
+
+  """All values starting with the given string."""
+  id_starts_with: ID
+
+  """All values not starting with the given string."""
+  id_not_starts_with: ID
+
+  """All values ending with the given string."""
+  id_ends_with: ID
+
+  """All values not ending with the given string."""
+  id_not_ends_with: ID
+  rate: Int
+
+  """All values that are not equal to given value."""
+  rate_not: Int
+
+  """All values that are contained in given list."""
+  rate_in: [Int!]
+
+  """All values that are not contained in given list."""
+  rate_not_in: [Int!]
+
+  """All values less than the given value."""
+  rate_lt: Int
+
+  """All values less than or equal the given value."""
+  rate_lte: Int
+
+  """All values greater than the given value."""
+  rate_gt: Int
+
+  """All values greater than or equal the given value."""
+  rate_gte: Int
+  text: String
+
+  """All values that are not equal to given value."""
+  text_not: String
+
+  """All values that are contained in given list."""
+  text_in: [String!]
+
+  """All values that are not contained in given list."""
+  text_not_in: [String!]
+
+  """All values less than the given value."""
+  text_lt: String
+
+  """All values less than or equal the given value."""
+  text_lte: String
+
+  """All values greater than the given value."""
+  text_gt: String
+
+  """All values greater than or equal the given value."""
+  text_gte: String
+
+  """All values containing the given string."""
+  text_contains: String
+
+  """All values not containing the given string."""
+  text_not_contains: String
+
+  """All values starting with the given string."""
+  text_starts_with: String
+
+  """All values not starting with the given string."""
+  text_not_starts_with: String
+
+  """All values ending with the given string."""
+  text_ends_with: String
+
+  """All values not ending with the given string."""
+  text_not_ends_with: String
+}
+
+type ReviewSubscriptionPayload {
+  mutation: MutationType!
+  node: Review
+  updatedFields: [String!]
+  previousValues: ReviewPreviousValues
+}
+
+input ReviewSubscriptionWhereInput {
+  """Logical AND on all given filters."""
+  AND: [ReviewSubscriptionWhereInput!]
+
+  """Logical OR on all given filters."""
+  OR: [ReviewSubscriptionWhereInput!]
+
+  """Logical NOT on all given filters combined by AND."""
+  NOT: [ReviewSubscriptionWhereInput!]
+
+  """The subscription event gets dispatched when it's listed in mutation_in"""
+  mutation_in: [MutationType!]
+
+  """
+  The subscription event gets only dispatched when one of the updated fields names is included in this list
+  """
+  updatedFields_contains: String
+
+  """
+  The subscription event gets only dispatched when all of the field names included in this list have been updated
+  """
+  updatedFields_contains_every: [String!]
+
+  """
+  The subscription event gets only dispatched when some of the field names included in this list have been updated
+  """
+  updatedFields_contains_some: [String!]
+  node: ReviewWhereInput
+}
+
+input ReviewUpdateInput {
+  rate: Int
+  text: String
+  author: UserUpdateOneRequiredWithoutReviewsInput
+  joke: JokeUpdateOneRequiredWithoutReviewsInput
+}
+
+input ReviewUpdateManyDataInput {
+  rate: Int
+  text: String
+}
+
+input ReviewUpdateManyMutationInput {
+  rate: Int
+  text: String
+}
+
+input ReviewUpdateManyWithoutAuthorInput {
+  create: [ReviewCreateWithoutAuthorInput!]
+  connect: [ReviewWhereUniqueInput!]
+  set: [ReviewWhereUniqueInput!]
+  disconnect: [ReviewWhereUniqueInput!]
+  delete: [ReviewWhereUniqueInput!]
+  update: [ReviewUpdateWithWhereUniqueWithoutAuthorInput!]
+  updateMany: [ReviewUpdateManyWithWhereNestedInput!]
+  deleteMany: [ReviewScalarWhereInput!]
+  upsert: [ReviewUpsertWithWhereUniqueWithoutAuthorInput!]
+}
+
+input ReviewUpdateManyWithoutJokeInput {
+  create: [ReviewCreateWithoutJokeInput!]
+  connect: [ReviewWhereUniqueInput!]
+  set: [ReviewWhereUniqueInput!]
+  disconnect: [ReviewWhereUniqueInput!]
+  delete: [ReviewWhereUniqueInput!]
+  update: [ReviewUpdateWithWhereUniqueWithoutJokeInput!]
+  updateMany: [ReviewUpdateManyWithWhereNestedInput!]
+  deleteMany: [ReviewScalarWhereInput!]
+  upsert: [ReviewUpsertWithWhereUniqueWithoutJokeInput!]
+}
+
+input ReviewUpdateManyWithWhereNestedInput {
+  where: ReviewScalarWhereInput!
+  data: ReviewUpdateManyDataInput!
+}
+
+input ReviewUpdateWithoutAuthorDataInput {
+  rate: Int
+  text: String
+  joke: JokeUpdateOneRequiredWithoutReviewsInput
+}
+
+input ReviewUpdateWithoutJokeDataInput {
+  rate: Int
+  text: String
+  author: UserUpdateOneRequiredWithoutReviewsInput
+}
+
+input ReviewUpdateWithWhereUniqueWithoutAuthorInput {
+  where: ReviewWhereUniqueInput!
+  data: ReviewUpdateWithoutAuthorDataInput!
+}
+
+input ReviewUpdateWithWhereUniqueWithoutJokeInput {
+  where: ReviewWhereUniqueInput!
+  data: ReviewUpdateWithoutJokeDataInput!
+}
+
+input ReviewUpsertWithWhereUniqueWithoutAuthorInput {
+  where: ReviewWhereUniqueInput!
+  update: ReviewUpdateWithoutAuthorDataInput!
+  create: ReviewCreateWithoutAuthorInput!
+}
+
+input ReviewUpsertWithWhereUniqueWithoutJokeInput {
+  where: ReviewWhereUniqueInput!
+  update: ReviewUpdateWithoutJokeDataInput!
+  create: ReviewCreateWithoutJokeInput!
+}
+
+input ReviewWhereInput {
+  """Logical AND on all given filters."""
+  AND: [ReviewWhereInput!]
+
+  """Logical OR on all given filters."""
+  OR: [ReviewWhereInput!]
+
+  """Logical NOT on all given filters combined by AND."""
+  NOT: [ReviewWhereInput!]
+  id: ID
+
+  """All values that are not equal to given value."""
+  id_not: ID
+
+  """All values that are contained in given list."""
+  id_in: [ID!]
+
+  """All values that are not contained in given list."""
+  id_not_in: [ID!]
+
+  """All values less than the given value."""
+  id_lt: ID
+
+  """All values less than or equal the given value."""
+  id_lte: ID
+
+  """All values greater than the given value."""
+  id_gt: ID
+
+  """All values greater than or equal the given value."""
+  id_gte: ID
+
+  """All values containing the given string."""
+  id_contains: ID
+
+  """All values not containing the given string."""
+  id_not_contains: ID
+
+  """All values starting with the given string."""
+  id_starts_with: ID
+
+  """All values not starting with the given string."""
+  id_not_starts_with: ID
+
+  """All values ending with the given string."""
+  id_ends_with: ID
+
+  """All values not ending with the given string."""
+  id_not_ends_with: ID
+  rate: Int
+
+  """All values that are not equal to given value."""
+  rate_not: Int
+
+  """All values that are contained in given list."""
+  rate_in: [Int!]
+
+  """All values that are not contained in given list."""
+  rate_not_in: [Int!]
+
+  """All values less than the given value."""
+  rate_lt: Int
+
+  """All values less than or equal the given value."""
+  rate_lte: Int
+
+  """All values greater than the given value."""
+  rate_gt: Int
+
+  """All values greater than or equal the given value."""
+  rate_gte: Int
+  text: String
+
+  """All values that are not equal to given value."""
+  text_not: String
+
+  """All values that are contained in given list."""
+  text_in: [String!]
+
+  """All values that are not contained in given list."""
+  text_not_in: [String!]
+
+  """All values less than the given value."""
+  text_lt: String
+
+  """All values less than or equal the given value."""
+  text_lte: String
+
+  """All values greater than the given value."""
+  text_gt: String
+
+  """All values greater than or equal the given value."""
+  text_gte: String
+
+  """All values containing the given string."""
+  text_contains: String
+
+  """All values not containing the given string."""
+  text_not_contains: String
+
+  """All values starting with the given string."""
+  text_starts_with: String
+
+  """All values not starting with the given string."""
+  text_not_starts_with: String
+
+  """All values ending with the given string."""
+  text_ends_with: String
+
+  """All values not ending with the given string."""
+  text_not_ends_with: String
+  author: UserWhereInput
+  joke: JokeWhereInput
+}
+
+input ReviewWhereUniqueInput {
+  id: ID
+}
+
 type Subscription {
   user(where: UserSubscriptionWhereInput): UserSubscriptionPayload
   joke(where: JokeSubscriptionWhereInput): JokeSubscriptionPayload
   comment(where: CommentSubscriptionWhereInput): CommentSubscriptionPayload
+  review(where: ReviewSubscriptionWhereInput): ReviewSubscriptionPayload
 }
 
 type User implements Node {
@@ -1038,9 +1579,11 @@ type User implements Node {
   email: String!
   password: String!
   username: String!
+  role: UserRole
   age: Int
   jokes(where: JokeWhereInput, orderBy: JokeOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Joke!]
   comments(where: CommentWhereInput, orderBy: CommentOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Comment!]
+  reviews(where: ReviewWhereInput, orderBy: ReviewOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Review!]
 }
 
 """A connection to a list of items."""
@@ -1058,9 +1601,11 @@ input UserCreateInput {
   email: String!
   password: String!
   username: String!
+  role: UserRole
   age: Int
   jokes: JokeCreateManyWithoutAuthorInput
   comments: CommentCreateManyWithoutAuthorInput
+  reviews: ReviewCreateManyWithoutAuthorInput
 }
 
 input UserCreateOneWithoutCommentsInput {
@@ -1073,13 +1618,20 @@ input UserCreateOneWithoutJokesInput {
   connect: UserWhereUniqueInput
 }
 
+input UserCreateOneWithoutReviewsInput {
+  create: UserCreateWithoutReviewsInput
+  connect: UserWhereUniqueInput
+}
+
 input UserCreateWithoutCommentsInput {
   id: ID
   email: String!
   password: String!
   username: String!
+  role: UserRole
   age: Int
   jokes: JokeCreateManyWithoutAuthorInput
+  reviews: ReviewCreateManyWithoutAuthorInput
 }
 
 input UserCreateWithoutJokesInput {
@@ -1087,7 +1639,20 @@ input UserCreateWithoutJokesInput {
   email: String!
   password: String!
   username: String!
+  role: UserRole
   age: Int
+  comments: CommentCreateManyWithoutAuthorInput
+  reviews: ReviewCreateManyWithoutAuthorInput
+}
+
+input UserCreateWithoutReviewsInput {
+  id: ID
+  email: String!
+  password: String!
+  username: String!
+  role: UserRole
+  age: Int
+  jokes: JokeCreateManyWithoutAuthorInput
   comments: CommentCreateManyWithoutAuthorInput
 }
 
@@ -1109,6 +1674,8 @@ enum UserOrderByInput {
   password_DESC
   username_ASC
   username_DESC
+  role_ASC
+  role_DESC
   age_ASC
   age_DESC
 }
@@ -1118,7 +1685,13 @@ type UserPreviousValues {
   email: String!
   password: String!
   username: String!
+  role: UserRole
   age: Int
+}
+
+enum UserRole {
+  JOKER
+  REVIEWER
 }
 
 type UserSubscriptionPayload {
@@ -1162,15 +1735,18 @@ input UserUpdateInput {
   email: String
   password: String
   username: String
+  role: UserRole
   age: Int
   jokes: JokeUpdateManyWithoutAuthorInput
   comments: CommentUpdateManyWithoutAuthorInput
+  reviews: ReviewUpdateManyWithoutAuthorInput
 }
 
 input UserUpdateManyMutationInput {
   email: String
   password: String
   username: String
+  role: UserRole
   age: Int
 }
 
@@ -1188,19 +1764,40 @@ input UserUpdateOneRequiredWithoutJokesInput {
   upsert: UserUpsertWithoutJokesInput
 }
 
+input UserUpdateOneRequiredWithoutReviewsInput {
+  create: UserCreateWithoutReviewsInput
+  connect: UserWhereUniqueInput
+  update: UserUpdateWithoutReviewsDataInput
+  upsert: UserUpsertWithoutReviewsInput
+}
+
 input UserUpdateWithoutCommentsDataInput {
   email: String
   password: String
   username: String
+  role: UserRole
   age: Int
   jokes: JokeUpdateManyWithoutAuthorInput
+  reviews: ReviewUpdateManyWithoutAuthorInput
 }
 
 input UserUpdateWithoutJokesDataInput {
   email: String
   password: String
   username: String
+  role: UserRole
   age: Int
+  comments: CommentUpdateManyWithoutAuthorInput
+  reviews: ReviewUpdateManyWithoutAuthorInput
+}
+
+input UserUpdateWithoutReviewsDataInput {
+  email: String
+  password: String
+  username: String
+  role: UserRole
+  age: Int
+  jokes: JokeUpdateManyWithoutAuthorInput
   comments: CommentUpdateManyWithoutAuthorInput
 }
 
@@ -1212,6 +1809,11 @@ input UserUpsertWithoutCommentsInput {
 input UserUpsertWithoutJokesInput {
   update: UserUpdateWithoutJokesDataInput!
   create: UserCreateWithoutJokesInput!
+}
+
+input UserUpsertWithoutReviewsInput {
+  update: UserUpdateWithoutReviewsDataInput!
+  create: UserCreateWithoutReviewsInput!
 }
 
 input UserWhereInput {
@@ -1383,6 +1985,16 @@ input UserWhereInput {
 
   """All values not ending with the given string."""
   username_not_ends_with: String
+  role: UserRole
+
+  """All values that are not equal to given value."""
+  role_not: UserRole
+
+  """All values that are contained in given list."""
+  role_in: [UserRole!]
+
+  """All values that are not contained in given list."""
+  role_not_in: [UserRole!]
   age: Int
 
   """All values that are not equal to given value."""
@@ -1411,6 +2023,9 @@ input UserWhereInput {
   comments_every: CommentWhereInput
   comments_some: CommentWhereInput
   comments_none: CommentWhereInput
+  reviews_every: ReviewWhereInput
+  reviews_some: ReviewWhereInput
+  reviews_none: ReviewWhereInput
 }
 
 input UserWhereUniqueInput {

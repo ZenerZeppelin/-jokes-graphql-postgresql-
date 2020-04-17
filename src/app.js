@@ -1,5 +1,5 @@
 import { GraphQLServer } from "graphql-yoga";
-import "./prisma"
+import prisma from "./prisma"
 
 import { Query, Mutation } from "./resolvers";
 
@@ -9,7 +9,10 @@ const resolvers = {
 
 const server = new GraphQLServer({
     typeDefs: "./src/schema.graphql",
-    resolvers
+    resolvers,
+    context: {
+        prisma
+    }
 });
 
 server.start(() => console.log("Server is up and running..."));
