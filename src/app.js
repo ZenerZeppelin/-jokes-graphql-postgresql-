@@ -4,7 +4,8 @@ import prisma from "./prisma"
 import { Query, Mutation } from "./resolvers";
 
 const resolvers = {
-    Query
+    Query,
+    Mutation
 }
 
 const server = new GraphQLServer({

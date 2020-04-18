@@ -1,8 +1,18 @@
-type Query{
+type Query {
   users:[User!]!
   jokes(query:String, minRate: Float): [Joke!]!
   comments(jokeId:ID, authorId:ID): [Comment!]!
   reviews(jokeId:ID, authorId:ID):[Review!]!
+}
+
+type Mutation {
+  signUp(data:SignUpInput!):User!
+  writeJoke(data:WriteJokeInput):Joke!
+  deleteJoke(jokeId:ID!):Joke!
+  updateJoke(data:updateJokeInput!, jokeId:ID!):Joke!
+  writeComment(data:WriteCommentInput!):Comment!
+  deleteComment(commentId:ID!):Comment!
+  updateComment(data:UpdateCommentInput, commentId:ID!):Comment!
 }
 
 type User {
@@ -10,7 +20,7 @@ type User {
   email: String!
   password: String!
   username: String!
-  role: UserRole
+  role: UserRole!
   age: Int
   jokes:[Joke!]!
   comments: [Comment!]!
@@ -31,7 +41,7 @@ type Joke {
 
 type Comment {
   id: ID!
-  text: String
+  text: String!
   author: User!
   joke: Joke!
 }
@@ -44,6 +54,34 @@ type Review {
   text: String!
 }
 
+input SignUpInput {
+  email: String!
+  password: String!
+  username: String!
+  role: UserRole!
+  age: Int
+}
+
+input WriteJokeInput {
+  authorId:ID!
+  title: String!
+  text: String!
+}
+
+input updateJokeInput {
+  title: String
+  text:String
+}
+
+input WriteCommentInput {
+  text: String!
+  authorId: ID!
+  jokeId: ID!
+}
+
+input UpdateCommentInput {
+  text: String!
+}
 enum UserRole {
   JOKER
   REVIEWER
