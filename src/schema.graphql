@@ -15,6 +15,12 @@ type Mutation {
   updateComment(data:UpdateCommentInput, commentId:ID!):Comment!
 }
 
+type Subscription {
+
+  jokes(authorId:ID!):JokeSubscriptionPayload!
+  comments(authorId: ID, jokeId:ID): CommentSubscriptionPayload!
+}
+
 type User {
   id: ID!
   email: String!
@@ -82,7 +88,24 @@ input WriteCommentInput {
 input UpdateCommentInput {
   text: String!
 }
+
+type JokeSubscriptionPayload {
+  mutation: MutationType!
+  node: Joke
+}
+
+type CommentSubscriptionPayload {
+  mutation:MutationType!
+  node:Comment
+}
+
 enum UserRole {
   JOKER
   REVIEWER
+}
+
+enum MutationType {
+    CREATED
+    UPDATED
+    DELETED
 }

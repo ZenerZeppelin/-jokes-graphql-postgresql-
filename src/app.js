@@ -1,11 +1,12 @@
 import { GraphQLServer } from "graphql-yoga";
 import prisma from "./prisma"
 
-import { Query, Mutation } from "./resolvers";
+import { Query, Mutation, Subscription } from "./resolvers";
 
 const resolvers = {
     Query,
-    Mutation
+    Mutation,
+    Subscription
 }
 
 const server = new GraphQLServer({
