@@ -7,12 +7,16 @@ type Query {
 
 type Mutation {
   signUp(data:SignUpInput!):User!
+  login(data:LoginDataInput!):AuthenticatedData!
+  deleteAccount:String!
   writeJoke(data:WriteJokeInput):Joke!
   deleteJoke(jokeId:ID!):Joke!
   updateJoke(data:updateJokeInput!, jokeId:ID!):Joke!
   writeComment(data:WriteCommentInput!):Comment!
   deleteComment(commentId:ID!):Comment!
   updateComment(data:UpdateCommentInput, commentId:ID!):Comment!
+  writeReview(data:WriteReviewInput!):Review!
+  deleteReview(reviewId:ID!):Review!
 }
 
 type Subscription {
@@ -69,7 +73,6 @@ input SignUpInput {
 }
 
 input WriteJokeInput {
-  authorId:ID!
   title: String!
   text: String!
 }
@@ -81,12 +84,23 @@ input updateJokeInput {
 
 input WriteCommentInput {
   text: String!
-  authorId: ID!
   jokeId: ID!
 }
 
 input UpdateCommentInput {
   text: String!
+}
+
+input LoginDataInput {
+  username:String
+  email: String
+  password: String!
+}
+
+input WriteReviewInput {
+  text: String!
+  rate: Int!
+  jokeId: ID!
 }
 
 type JokeSubscriptionPayload {
@@ -97,6 +111,11 @@ type JokeSubscriptionPayload {
 type CommentSubscriptionPayload {
   mutation:MutationType!
   node:Comment
+}
+
+type AuthenticatedData {
+  token: String
+  Message: String!
 }
 
 enum UserRole {

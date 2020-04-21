@@ -5,6 +5,7 @@ export const Query = {
     },
 
     async jokes(parent, { query, minRate }, { prisma }, info) {
+
         const options = {};
         if (query || minRate) {
             if (query && minRate) {
