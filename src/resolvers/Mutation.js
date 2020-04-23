@@ -8,7 +8,6 @@ export const Mutation = {
 
     async signUp(parent, args, { prisma }, info) {
         const password = await bcrypt.hash(args.data.password, 12);
-        console.log(password);
         if (!password)
             throw new Error("Error while signing up.");
 
